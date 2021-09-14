@@ -33,15 +33,20 @@ func revocationEndpoint(p *oidc.Provider) (string, error) {
 // If no tokens are found, it succeeds.
 func revokeTokens(ctx context.Context, revocationEndpoint string, token *oauth2.Token, clientID, clientSecret string) error {
 	if token.RefreshToken != "" {
+		log.Info("Attempting to revoke refresh token...")
 		err := revokeToken(ctx, revocationEndpoint, token.RefreshToken, "refresh_token", clientID, clientSecret)
-		if err != nil {
+		if err != nil {		
 			return errors.Wrap(err, "Failed to revoke refresh token")
 		}
+		log.Info("Successfully revoked refresh token.")
 	}
 	if token.AccessToken != "" {
+		log.Info("Attempting to revoke access token...")
 		err := revokeToken(ctx, revocationEndpoint, token.AccessToken, "access_token", clientID, clientSecret)
 		if err != nil {
 			log.Warning("Failed to revoke access token")
+		} else {
+			log.Info("Successfully revoked access token.")
 		}
 	}
 	return nil
